@@ -2,15 +2,19 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.0.7'
 
-gem 'mysql2'
+gem 'mysql2', '0.2.7'
+
+gem 'devise'
 
 group :development do
   gem 'rspec-rails'
+  gem 'annotate-models'
 end
 
 group :test do
   gem 'rspec'
   gem 'webrat'
+  gem 'spork'
 end
 
 # Use unicorn as the web server
