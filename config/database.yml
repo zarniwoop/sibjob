@@ -22,7 +22,12 @@ test:
   socket: /tmp/mysql.sock
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
+  adapter: mysql2
+  encoding: utf8
+  database: sibjob_production
   pool: 5
-  timeout: 5000
+  username: sibjobdba
+  password: mHZZ7Kv8CZ
+  host: sibjob-db.bajink.com
+  port: 3306  #not necessary since its the standard mysql port
+
