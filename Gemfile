@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'rails', '3.0.3'
+gem 'rack', '1.2.1'
 
 gem 'mysql2', '0.2.7'
 
@@ -14,7 +15,7 @@ end
 group :test do
   gem 'rspec'
   gem 'webrat'
-  gem 'spork'
+  gem 'spork', '0.8.4'
 end
 
 # Use unicorn as the web server

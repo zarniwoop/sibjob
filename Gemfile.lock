@@ -50,7 +50,7 @@ GEM
     nokogiri (1.4.4)
     orm_adapter (0.0.5)
     polyglot (0.3.1)
-    rack (1.2.2)
+    rack (1.2.1)
     rack-mount (0.6.14)
       rack (>= 1.0.0)
     rack-test (0.5.7)
@@ -101,8 +101,9 @@ DEPENDENCIES
   annotate-models
   devise
   mysql2 (= 0.2.7)
+  rack (= 1.2.1)
   rails (= 3.0.3)
   rspec
   rspec-rails
-  spork
+  spork (= 0.8.4)
   webrat
