@@ -1,5 +1,5 @@
 if ENV['RAILS_ENV'] == 'production'  # don't bother on dev
-  ENV['GEM_PATH'] = '/home/fapupon/.gems' + ':/usr/lib/ruby/gems/1.8'
+  ENV['GEM_PATH'] = '/home/jabink/.gems' + ':/usr/lib/ruby/gems/1.8'
 end
 
 # Load the rails application
