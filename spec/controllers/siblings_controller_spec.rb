@@ -53,13 +53,18 @@ describe SiblingsController do
 
     describe "job completion" do
 
-#      it "should show a link to mark a job done if not done" do
-#        job = Factory(:job, :summary => "Wash dishes")
-#        get :jobs, :id => @sibling
-#        response.should have_selector("a", :content => "Done!")
-#      end
+      it "should show a button to mark a job done if not done" do
+        job = Factory(:job, :summary => "Wash dishes")
+        get :jobs, :id => @sibling
+        response.should have_selector("input", :value => "Done!")
+      end
 
-      it "should show a link to mark a job undone if done"
+      it "should show a link to mark a job undone if done" do
+        job = Factory(:job, :summary => "Wash dishes")
+        @sibling.perform_job!(job)
+        get :jobs, :id => @sibling
+        response.should have_selector("input", :value => "Undo")
+      end
 
       # it "should show jobs for a specific date"
       # it "should remember jobs marked done on a specific date"

@@ -12,6 +12,20 @@
               <td class="points">
                 <span class="pointvalue"><%= job.pointvalue %></span>
               </td>
+              <td>
+                <% if job.performed_by?(@sibling) %>
+                    <%= form_for job.job_records.find_by_performer_id(@sibling),
+                                 :html => { :method => :delete } do |f| %>
+                      <div class="actions"><%= f.submit "Undo" %></div>
+                    <% end %>
+                <% else %>
+                    <%= form_for job.job_records.
+                                              build(:performer_id => @sibling.id) do |f| %>
+                        <div><%= f.hidden_field :job_id %></div>
+                        <div class="actions"><%= f.submit "Done!" %></div>
+                    <% end %>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         </table>

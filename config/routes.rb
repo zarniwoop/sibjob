@@ -1,7 +1,7 @@
 Sibjob::Application.routes.draw do
   devise_for :siblings
 
-  resources :job_record
+  resources :job_records
   resources :siblings do
     member do
       get :jobs

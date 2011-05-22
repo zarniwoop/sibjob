@@ -1,6 +1,7 @@
 require 'spec_helper'
 
-describe JobRecordController do
+describe JobRecordsController do
+  render_views
 
   describe "access control" do
 

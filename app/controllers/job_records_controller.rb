@@ -1,4 +1,4 @@
-class JobRecordController < ApplicationController
+class JobRecordsController < ApplicationController
   before_filter :authenticate_sibling!
 
   def create
