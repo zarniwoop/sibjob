@@ -1,6 +1,13 @@
 Sibjob::Application.routes.draw do
   devise_for :siblings
 
+  resources :job_record
+  resources :siblings do
+    member do
+      get :jobs
+    end
+  end
+
   get "pages/home"
 
   get "pages/contact"

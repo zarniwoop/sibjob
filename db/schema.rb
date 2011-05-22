@@ -10,7 +10,30 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110514224259) do
+ActiveRecord::Schema.define(:version => 20110517212546) do
+
+  create_table "job_records", :force => true do |t|
+    t.integer  "job_id"
+    t.integer  "performer_id"
+    t.integer  "inspector_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "job_records", ["inspector_id"], :name => "index_job_records_on_inspector_id"
+  add_index "job_records", ["performer_id"], :name => "index_job_records_on_performer_id"
+
+  create_table "jobs", :force => true do |t|
+    t.string   "summary"
+    t.text     "description"
+    t.integer  "pointvalue"
+    t.integer  "sibling_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "interval"
+  end
+
+  add_index "jobs", ["sibling_id"], :name => "index_jobs_on_sibling_id"
 
   create_table "siblings", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false

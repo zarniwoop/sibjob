@@ -1,0 +1,21 @@
+<div class="main">
+  <h1><%= @sibling.email %></h1>
+  <% unless @jobs.empty? %>
+    <% @job_intervals.keys.sort.each do |interval| %>
+        <h2><%= interval.capitalize %> Jobs</h2>
+        <table class="jobs" summary="Sibling <%= interval %> jobs">
+          <% @job_intervals[interval].each do |job| %>
+            <tr>
+              <td class="job">
+                <span class="summary"><%= job.summary %></span>
+              </td>
+              <td class="points">
+                <span class="pointvalue"><%= job.pointvalue %></span>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+    <% end %>
+  <% end %>
+</div>
+
