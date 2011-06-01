@@ -1,5 +1,9 @@
 <div class="main">
   <h1><%= @sibling.email %></h1>
+  <%= form_tag(jobs_sibling_path(@sibling), :method => "get") do %>
+    Jobs for: <%= date_select("JobRecord", "performed_on", :default => @jobs_for_date) %>
+      <%= submit_tag("Go") %>
+  <% end %>
   <% unless @jobs.empty? %>
     <% @job_intervals.keys.sort.each do |interval| %>
         <h2><%= interval.capitalize %> Jobs</h2>
@@ -13,15 +17,17 @@
                 <span class="pointvalue"><%= job.pointvalue %></span>
               </td>
               <td>
-                <% if job.performed_by?(@sibling) %>
-                    <%= form_for job.job_records.find_by_performer_id(@sibling),
+                <% if job.performed_by?(@sibling, @jobs_for_date) %>
+                    <%= form_for job.job_records.find_by_performer_id_and_performed_on(@sibling, @jobs_for_date),
                                  :html => { :method => :delete } do |f| %>
                       <div class="actions"><%= f.submit "Undo" %></div>
                     <% end %>
                 <% else %>
                     <%= form_for job.job_records.
-                                              build(:performer_id => @sibling.id) do |f| %>
+                                              build(:performer_id => @sibling.id,
+                                                    :performed_on => @jobs_for_date) do |f| %>
                         <div><%= f.hidden_field :job_id %></div>
+                        <div><%= f.hidden_field :performed_on %></div>
                         <div class="actions"><%= f.submit "Done!" %></div>
                     <% end %>
                 <% end %>

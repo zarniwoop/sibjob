@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110517212546) do
+ActiveRecord::Schema.define(:version => 20110523040914) do
 
   create_table "job_records", :force => true do |t|
     t.integer  "job_id"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(:version => 20110517212546) do
     t.integer  "inspector_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.date     "performed_on"
   end
 
   add_index "job_records", ["inspector_id"], :name => "index_job_records_on_inspector_id"

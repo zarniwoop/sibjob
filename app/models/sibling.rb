@@ -35,8 +35,9 @@ class Sibling < ActiveRecord::Base
     Job.for_sibling(self)
   end
 
-  def perform_job!(job)
-    job.job_records.build(:performer_id => self.id)
+  def perform_job!(job, performed_on_date = nil)
+    performed_on_date ||= Date.today
+    job.job_records.build(:performer_id => self.id, :performed_on => performed_on_date)
     job.save!
   end
 

@@ -20,7 +20,7 @@ describe Job do
       @performer = Factory(:sibling, :email => Factory.next(:email))
       @job.job_records.build(:performer_id => @performer.id)
       @job.save!
-      @job.should be_performed_by(@performer)
+      @job.should be_performed_by(@performer, Date.today)
     end
 
   end

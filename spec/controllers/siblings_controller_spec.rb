@@ -51,12 +51,43 @@ describe SiblingsController do
       response.should have_selector("h2", :content => "Weekly Jobs")
     end
 
+    describe "job day selector" do
+      it "should be present" do
+        job = Factory(:job, :summary => "Wash dishes")
+        get :jobs, :id => @sibling
+        response.should have_selector("form", :action =>"/siblings/#{@sibling.id}/jobs")
+        response.should have_selector("select", :name => "JobRecord[performed_on(1i)]")
+        response.should have_selector("select", :name => "JobRecord[performed_on(2i)]")
+        response.should have_selector("select", :name => "JobRecord[performed_on(3i)]")
+        response.should have_selector("input", :type => "submit", :value => "Go")
+      end
+
+      it "should show day passed in" do
+        date_to_show = Date.today - 2
+        get :jobs, :id => @sibling, :jobs_on_date => date_to_show.to_s
+        response.should have_selector("option", :selected => "selected",
+                                      :value => date_to_show.year.to_s)
+        response.should have_selector("option", :selected => "selected",
+                                      :value => date_to_show.day.to_s)
+        response.should have_selector("option", :selected => "selected",
+                                      :value => date_to_show.month.to_s)
+      end
+    end
+
     describe "job completion" do
 
       it "should show a button to mark a job done if not done" do
         job = Factory(:job, :summary => "Wash dishes")
         get :jobs, :id => @sibling
         response.should have_selector("input", :value => "Done!")
+      end
+
+      it "should have a hidden field to mark a job done on a specific date" do
+        job = Factory(:job, :summary => "Wash dishes")
+        date_for_job = Date.today - 3
+        get :jobs, :id => @sibling, :jobs_on_date => date_for_job.to_s
+        response.should have_selector("input", :type => "hidden", :id => "job_record_performed_on",
+                                      :value => date_for_job.to_s)
       end
 
       it "should show a link to mark a job undone if done" do
@@ -66,8 +97,17 @@ describe SiblingsController do
         response.should have_selector("input", :value => "Undo")
       end
 
+      it "should remember jobs marked done on a specific date" do
+        job = Factory(:job, :summary => "Wash dishes")
+        date_for_job = Date.today - 3
+        @sibling.perform_job!(job, date_for_job)
+        get :jobs, :id => @sibling, :jobs_on_date => date_for_job.to_s
+        response.should have_selector("input", :value => "Undo")
+        get :jobs, :id => @sibling, :jobs_on_date => Date.today.to_s
+        response.should have_selector("input", :value => "Done!")
+      end
+
       # it "should show jobs for a specific date"
-      # it "should remember jobs marked done on a specific date"
       # it "should show jobs designated for everyone even if one sibling has done the job"
       # it "should properly set the next appearance day for non-daily recurring jobs"
 

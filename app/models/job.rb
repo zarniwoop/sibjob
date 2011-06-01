@@ -22,7 +22,7 @@ class Job < ActiveRecord::Base
     where("sibling_id IS NULL OR sibling_id = ?", sibling)
   end
 
-  def performed_by?(sibling)
-    job_records.find_by_performer_id(sibling.id) != nil
+  def performed_by?(sibling, on_date)
+    job_records.find_by_performer_id_and_performed_on(sibling.id, on_date) != nil
   end
 end

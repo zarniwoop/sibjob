@@ -10,11 +10,25 @@ describe JobRecord do
                                          :inspector_id => @inspector.id)
   end
 
-  it "should require a job" do
-    JobRecord.new().should_not be_valid
-  end
-
   describe "validations" do
+    it "should require a job" do
+      JobRecord.new().should_not be_valid
+    end
+
+    it "should require a performer_id" do
+      @job_record.performer_id = nil
+      @job_record.should_not be_valid
+    end
+
+    it "should require a performed date" do
+      @job_record.performed_on = nil
+      @job_record.should_not be_valid
+    end
+
+    it "should set a default performed at date" do
+      @job_record.performed_on.should_not be_nil
+    end
+
     it "should create a new instance given valid attributes" do
       @job.job_records.build(:performer_id => @performer.id)
       @job.save!
@@ -47,15 +61,5 @@ describe JobRecord do
       @job_record.inspector.should == @inspector
     end
   end
-
-  describe "validations" do
-
-    it "should require a performer_id" do
-      @job_record.performer_id = nil
-      @job_record.should_not be_valid
-    end
-
-  end
-
 
 end
