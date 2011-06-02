@@ -18,11 +18,18 @@ class Job < ActiveRecord::Base
   belongs_to :sibling
   has_many :job_records
 
-  def self.for_sibling(sibling)
-    where("sibling_id IS NULL OR sibling_id = ?", sibling)
-  end
+  scope :for_sibling, lambda { |sibling, on_date| for_sibling_on_date(sibling, on_date) }
 
   def performed_by?(sibling, on_date)
     job_records.find_by_performer_id_and_performed_on(sibling.id, on_date) != nil
+  end
+
+  private
+
+  def self.for_sibling_on_date(sibling, on_date)
+    unperformed_job_ids = %(SELECT job_id FROM job_records
+                          WHERE performed_on = :on_date AND performer_id <> :sibling_id)
+    where("id NOT IN (#{unperformed_job_ids}) AND (sibling_id IS NULL OR sibling_id = :sibling_id)",
+          {:on_date => on_date, :sibling_id => sibling})
   end
 end

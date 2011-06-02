@@ -31,8 +31,9 @@ class Sibling < ActiveRecord::Base
   has_many :job_records, :foreign_key => "performer_id"
   has_many :job_records, :foreign_key => "inspector_id"
 
-  def job_list
-    Job.for_sibling(self)
+  def job_list(performed_on_date = nil)
+    performed_on_date ||= Date.today
+    Job.for_sibling(self, performed_on_date)
   end
 
   def perform_job!(job, performed_on_date = nil)

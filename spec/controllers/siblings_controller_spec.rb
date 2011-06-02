@@ -107,9 +107,27 @@ describe SiblingsController do
         response.should have_selector("input", :value => "Done!")
       end
 
-      # it "should show jobs for a specific date"
+      it "should not show jobs completed on a day by one sibling for another sibling" do
+        other_sibling = Factory(:sibling, :email => "foo@bar.com")
+        job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly")
+        other_sibling.perform_job!(job)
+        get :jobs, :id => @sibling
+        response.should_not have_selector("span.summary", :content => job.summary)
+      end
+
       # it "should show jobs designated for everyone even if one sibling has done the job"
       # it "should properly set the next appearance day for non-daily recurring jobs"
+
+    end
+
+    describe "inspections" do
+
+      # it "should show any job that has been completed by another sibling but not inspected"
+      # it "should show inspections on the same day job was completed"
+      # it "should not show sibling's own completed jobs as needing inspection"
+      # it "should not show buttons for inspected jobs for the job performer"
+      # it "should not allow an already-inspected job to be marked inspected"
+      # it "should allow an inspector to retract an inspection"
 
     end
   end
