@@ -115,7 +115,15 @@ describe SiblingsController do
         response.should_not have_selector("span.summary", :content => job.summary)
       end
 
-      # it "should show jobs designated for everyone even if one sibling has done the job"
+      it "should show jobs designated for everyone even if one sibling has done the job" do
+        other_sibling = Factory(:sibling, :email => "foo@bar.com")
+        job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly",
+                      :assigned_to_everyone => true)
+        other_sibling.perform_job!(job)
+        get :jobs, :id => @sibling
+        response.should have_selector("span.summary", :content => job.summary)
+      end
+
       # it "should properly set the next appearance day for non-daily recurring jobs"
 
     end
