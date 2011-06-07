@@ -19,23 +19,38 @@ class Job < ActiveRecord::Base
   belongs_to :sibling
   has_many :job_records
 
-  scope :for_sibling, lambda { |sibling, on_date| for_sibling_on_date(sibling, on_date) }
+  scope :to_do_for_sibling, lambda { |sibling, on_date| to_do_for_sibling_on_date(sibling, on_date) }
+  scope :done_for_sibling, lambda { |sibling, on_date| done_for_sibling_on_date(sibling, on_date) }
+
+  def performed_by(sibling, on_date)
+     job_records.find_all_by_performer_id_and_performed_on(sibling.id, on_date)
+  end
 
   def performed_by?(sibling, on_date)
-    job_records.find_by_performer_id_and_performed_on(sibling.id, on_date) != nil
+    !self.performed_by(sibling, on_date).empty?
   end
 
   private
 
-  def self.for_sibling_on_date(sibling, on_date)
-    ids_for_jobs_performed_today_by_others =
-                       %(SELECT job_id FROM jobs, job_records
-                          WHERE performed_on = :on_date
-                            AND jobs.id = job_id
-                            AND assigned_to_everyone = 0
-                            AND performer_id <> :sibling_id)
-    where(%(id NOT IN (#{ids_for_jobs_performed_today_by_others}) 
+  def self.to_do_for_sibling_on_date(sibling, on_date)
+    ids_for_jobs_performed_today =
+       %(SELECT job_id FROM jobs, job_records
+          WHERE performed_on = :on_date
+            AND jobs.id = job_id
+            AND assigned_to_everyone = 0
+            AND (jobs.interval IS NULL OR jobs.interval <> "repeatable"))
+    ids_for_weekly_jobs_performed_within_week =
+        %(SELECT job_id FROM jobs, job_records
+          WHERE performed_on between :on_date - INTERVAL 6 DAY and :on_date
+            AND jobs.id = job_id
+            AND jobs.interval = "weekly")
+    where(%(id NOT IN (#{ids_for_jobs_performed_today})
+          AND id NOT IN (#{ids_for_weekly_jobs_performed_within_week})
           AND (sibling_id IS NULL OR sibling_id = :sibling_id)),
           {:on_date => on_date, :sibling_id => sibling})
+  end
+
+  def self.done_for_sibling_on_date(sibling, on_date)
+    joins(:job_records).where(:job_records => {:performer_id => sibling.id, :performed_on => on_date})
   end
 end

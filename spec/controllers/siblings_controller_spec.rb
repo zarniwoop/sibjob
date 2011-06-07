@@ -1,4 +1,4 @@
-require "rspec"
+require "spec_helper"
 
 describe SiblingsController do
   render_views
@@ -117,15 +117,45 @@ describe SiblingsController do
 
       it "should show jobs designated for everyone even if one sibling has done the job" do
         other_sibling = Factory(:sibling, :email => "foo@bar.com")
-        job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly",
+        job = Factory(:job, :summary => "Clean room", :interval => "daily",
                       :assigned_to_everyone => true)
         other_sibling.perform_job!(job)
         get :jobs, :id => @sibling
         response.should have_selector("span.summary", :content => job.summary)
       end
 
-      # it "should properly set the next appearance day for non-daily recurring jobs"
+      it "should show a job designated for everyone as done if current sibling has done the job" do
+        job = Factory(:job, :summary => "Clean room", :interval => "daily",
+                      :assigned_to_everyone => true)
+        @sibling.perform_job!(job)
+        get :jobs, :id => @sibling
+        response.should have_selector("input", :value => "Undo")
+      end
 
+      it "should show another instance of a repeatable job even if completed by sibling" do
+        job = Factory(:job, :summary => "Wash load of clothes", :interval => "repeatable")
+        @sibling.perform_job!(job)
+        get :jobs, :id => @sibling
+        response.should have_selector("input", :value => "Undo")
+        response.should have_selector("input", :value => "Done!")
+      end
+
+      it "should properly set the next appearance day for weekly recurring jobs" do
+        job = Factory(:job, :summary => "Clean basement stairs", :interval => "weekly")
+        date_for_job = Date.today - 3
+        @sibling.perform_job!(job, date_for_job)
+        get :jobs, :id => @sibling, :jobs_on_date => date_for_job.to_s
+        response.should have_selector("input", :value => "Undo")
+        get :jobs, :id => @sibling, :jobs_on_date => Date.today.to_s
+        response.should_not have_selector("span.summary", :content => job.summary)
+        get :jobs, :id => @sibling, :jobs_on_date => (Date.today + 3).to_s
+        response.should_not have_selector("span.summary", :content => job.summary)
+        get :jobs, :id => @sibling, :jobs_on_date => (Date.today + 4).to_s
+        response.should have_selector("span.summary", :content => job.summary)
+        response.should have_selector("input", :value => "Done!")
+      end
+
+      # it "should show weekly jobs designated for everyone even if one sibling has done the job"
     end
 
     describe "inspections" do

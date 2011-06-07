@@ -4,7 +4,7 @@
     Jobs for: <%= date_select("JobRecord", "performed_on", :default => @jobs_for_date) %>
       <%= submit_tag("Go") %>
   <% end %>
-  <% unless @jobs.empty? %>
+  <% unless @jobs_to_do.empty? %>
     <% @job_intervals.keys.sort.each do |interval| %>
         <h2><%= interval.capitalize %> Jobs</h2>
         <table class="jobs" summary="Sibling <%= interval %> jobs">
@@ -17,25 +17,40 @@
                 <span class="pointvalue"><%= job.pointvalue %></span>
               </td>
               <td>
-                <% if job.performed_by?(@sibling, @jobs_for_date) %>
-                    <%= form_for job.job_records.find_by_performer_id_and_performed_on(@sibling, @jobs_for_date),
-                                 :html => { :method => :delete } do |f| %>
-                      <div class="actions"><%= f.submit "Undo" %></div>
-                    <% end %>
-                <% else %>
-                    <%= form_for job.job_records.
-                                              build(:performer_id => @sibling.id,
-                                                    :performed_on => @jobs_for_date) do |f| %>
-                        <div><%= f.hidden_field :job_id %></div>
-                        <div><%= f.hidden_field :performed_on %></div>
-                        <div class="actions"><%= f.submit "Done!" %></div>
-                    <% end %>
+                <%= form_for job.job_records.
+                                          build(:performer_id => @sibling.id,
+                                                :performed_on => @jobs_for_date) do |f| %>
+                    <div><%= f.hidden_field :job_id %></div>
+                    <div><%= f.hidden_field :performed_on %></div>
+                    <div class="actions"><%= f.submit "Done!" %></div>
                 <% end %>
               </td>
             </tr>
           <% end %>
         </table>
     <% end %>
+  <% end %>
+
+  <% unless @jobs_done.empty? %>
+      <h2>Completed Jobs</h2>
+      <table class="jobs" summary="Sibling performed jobs">
+        <% @jobs_done.each do |job| %>
+          <tr>
+            <td class="job">
+              <span class="summary"><%= job.summary %></span>
+            </td>
+            <td class="points">
+              <span class="pointvalue"><%= job.pointvalue %></span>
+            </td>
+            <td>
+              <%= form_for job.performed_by(@sibling, @jobs_for_date),
+                           :html => { :method => :delete } do |f| %>
+                <div class="actions"><%= f.submit "Undo" %></div>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </table>
   <% end %>
 </div>
 

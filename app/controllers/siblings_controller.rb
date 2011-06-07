@@ -2,11 +2,12 @@ class SiblingsController < ApplicationController
   def jobs
     @sibling = Sibling.find(params[:id])
     @jobs_for_date = date_for_job_list(params)
-    @jobs = @sibling.job_list
-    @jobs.each do |job|
+    @jobs_to_do = Job.to_do_for_sibling(@sibling, @jobs_for_date)
+    @jobs_to_do.each do |job|
       job.interval ||= "one-time"
     end
-    @job_intervals = @jobs.group_by {|job| job.interval}
+    @job_intervals = @jobs_to_do.group_by {|job| job.interval}
+    @jobs_done = Job.done_for_sibling(@sibling, @jobs_for_date)
   end
 
   private
