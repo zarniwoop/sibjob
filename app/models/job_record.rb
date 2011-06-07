@@ -32,6 +32,15 @@ class JobRecord < ActiveRecord::Base
     self.performed_on ||= Date.today
   end
 
+  def inspected?
+    !inspector_id.nil?
+  end
+
+  def uninspect!
+    self.inspector_id = nil
+    save!
+  end
+
   private
 
   def self.inspectable_for_sibling_on_date(sibling, on_date)

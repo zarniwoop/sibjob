@@ -69,10 +69,18 @@ describe JobRecordsController do
       sign_in @inspector
     end
 
-    it "should change the record's attributes" do
+    it "should inspect jobs that aren't inspected" do
       put :update, :id => @job_record
       @job_record.reload
       @job_record.inspector.should == @inspector
+    end
+
+    it "should un-inspect jobs that are previously inspected" do
+      @job_record.inspector = @inspector
+      @job_record.save!
+      put :update, :id => @job_record
+      @job_record.reload
+      @job_record.inspector.should be_nil
     end
 
     it "should redirect to the job list page" do
@@ -80,6 +88,8 @@ describe JobRecordsController do
       response.should redirect_to(jobs_sibling_path(@inspector,
                                                     :jobs_on_date => @job_record.performed_on))
     end
+
+    # it "should not allow a performer to also be the inspector"
   end
 
 end

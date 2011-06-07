@@ -15,7 +15,8 @@
           <td class="job">
               <%= form_for job_record,
                            :html => { :method => :put } do |f| %>
-                <div class="actions"><%= f.submit "It's Good!" %></div>
+                <% inspect_label = job_record.inspected? ? "Take Back" : "It's Good!" %>
+                <div class="actions"><%= f.submit inspect_label %></div>
               <% end %>
           </td>
         </tr>

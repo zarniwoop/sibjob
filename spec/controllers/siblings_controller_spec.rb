@@ -189,9 +189,14 @@ describe SiblingsController do
         response.should have_selector("input", :value => "It's Good!")
       end
 
+      it "should show a button to take back an inspection" do
+        @sibling.inspect_job!(@other_job.job_records[0])
+        get :jobs, :id => @sibling
+        response.should have_selector("input", :value => "Take Back")
+      end
+
       # it "should not show buttons for inspected jobs for the job performer"
       # it "should not show an already-inspected job to be marked inspected"
-      # it "should allow an inspector to retract an inspection"
 
     end
   end
