@@ -46,4 +46,9 @@ class Sibling < ActiveRecord::Base
     job_record.destroy
   end
 
+  def inspect_job!(job_record)
+    job_record.inspector = self
+    job_record.save!
+  end
+
 end

@@ -25,7 +25,21 @@ class JobRecord < ActiveRecord::Base
 
   after_initialize :init
 
+  scope :inspectable_for_sibling, lambda { |sibling, on_date| inspectable_for_sibling_on_date(sibling, on_date) }
+
+
   def init
     self.performed_on ||= Date.today
   end
+
+  private
+
+  def self.inspectable_for_sibling_on_date(sibling, on_date)
+#    ids_for_inspectable_jobs =
+#        %(SELECT job_id FROM job_records
+#          WHERE
+#            AND inspector_id IS NULL)
+    where("performed_on = '#{on_date}' AND performer_id <> #{sibling.id}")
+  end
+
 end

@@ -31,12 +31,6 @@ describe JobRecordsController do
       end.should change(JobRecord, :count).by(1)
     end
 
-#    it "should create a relationship using Ajax" do
-#      lambda do
-#        xhr :post, :create, :relationship => { :followed_id => @followed }
-#        response.should be_success
-#      end.should change(Relationship, :count).by(1)
-#    end
   end
 
   describe "DELETE 'destroy'" do
@@ -52,23 +46,40 @@ describe JobRecordsController do
     it "should destroy a job record" do
       lambda do
         delete :destroy, :id => @job_record
-        response.should be_redirect
       end.should change(JobRecord, :count).by(-1)
     end
 
-#    it "should destroy a relationship using Ajax" do
-#      lambda do
-#        xhr :delete, :destroy, :id => @relationship
-#        response.should be_success
-#      end.should change(Relationship, :count).by(-1)
-#    end
+    it "should redirect to the job list page" do
+      lambda do
+        delete :destroy, :id => @job_record
+        response.should redirect_to(jobs_sibling_path(@performer,
+                                                      :jobs_on_date => @job_record.performed_on))
+      end
+    end
   end
 
-#  describe "GET 'update'" do
-#    it "should be successful" do
-#      put 'update', :id => 1
-#      response.should be_success
-#    end
-#  end
+  describe "POST 'update'" do
+
+    before(:each) do
+      @job = Factory(:job)
+      @performer = Factory(:sibling, :email => Factory.next(:email))
+      @performer.perform_job!(@job)
+      @job_record = @job.job_records.find_by_performer_id(@performer.id)
+      @inspector = Factory(:sibling)
+      sign_in @inspector
+    end
+
+    it "should change the record's attributes" do
+      put :update, :id => @job_record
+      @job_record.reload
+      @job_record.inspector.should == @inspector
+    end
+
+    it "should redirect to the job list page" do
+      put :update, :id => @job_record, :inspector_id => @inspector
+      response.should redirect_to(jobs_sibling_path(@inspector,
+                                                    :jobs_on_date => @job_record.performed_on))
+    end
+  end
 
 end

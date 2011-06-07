@@ -16,6 +16,9 @@ class JobRecordsController < ApplicationController
   end
 
   def update
+    @job_record = JobRecord.find(params[:id])
+    current_sibling.inspect_job!(@job_record)
+    redirect_to jobs_sibling_path(current_sibling, :jobs_on_date => @job_record.performed_on)
   end
 
 end

@@ -112,7 +112,7 @@ describe SiblingsController do
         job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly")
         other_sibling.perform_job!(job)
         get :jobs, :id => @sibling
-        response.should_not have_selector("span.summary", :content => job.summary)
+        response.should_not have_selector("span.pointvalue", :content => job.pointvalue.to_s)
       end
 
       it "should show jobs designated for everyone even if one sibling has done the job" do
@@ -160,11 +160,37 @@ describe SiblingsController do
 
     describe "inspections" do
 
-      # it "should show any job that has been completed by another sibling but not inspected"
-      # it "should show inspections on the same day job was completed"
-      # it "should not show sibling's own completed jobs as needing inspection"
+      before(:each) do
+        @other_sibling = Factory(:sibling, :email => "foo@bar.com")
+        @other_job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly")
+        @other_sibling.perform_job!(@other_job)
+      end
+
+      it "should show any jobs done by another sibling that need inspection" do
+        get :jobs, :id => @sibling
+        response.should have_selector("h2", :content => "Inspections Needed")
+        response.should have_selector("span.summary", :content => @other_job.summary)
+      end
+
+      it "should show inspections only on the day job was completed" do
+        get :jobs, :id => @sibling, :jobs_on_date => (Date.today + 1).to_s
+        response.should_not have_selector("h2", :content => "Inspections Needed")
+        response.should_not have_selector("span.summary", :content => @other_job.summary)
+      end
+
+      it "should not show sibling's own completed jobs as needing inspection" do
+        get :jobs, :id => @other_sibling
+        response.should_not have_selector("h2", :content => "Inspections Needed")
+        # response.should_not have_selector("span.summary", :content => @other_job.summary)
+      end
+
+      it "should show an inspect button for jobs to be inspected" do
+        get :jobs, :id => @sibling
+        response.should have_selector("input", :value => "It's Good!")
+      end
+
       # it "should not show buttons for inspected jobs for the job performer"
-      # it "should not allow an already-inspected job to be marked inspected"
+      # it "should not show an already-inspected job to be marked inspected"
       # it "should allow an inspector to retract an inspection"
 
     end

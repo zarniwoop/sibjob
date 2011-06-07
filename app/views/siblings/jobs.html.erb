@@ -4,6 +4,24 @@
     Jobs for: <%= date_select("JobRecord", "performed_on", :default => @jobs_for_date) %>
       <%= submit_tag("Go") %>
   <% end %>
+  <% unless @job_records_to_inspect.empty? %>
+    <h2>Inspections Needed</h2>
+    <table class="inspections" summary="Jobs to inspect">
+      <% @job_records_to_inspect.each do |job_record| %>
+        <tr>
+          <td class="job">
+            <span class="summary"><%= job_record.job.summary %></span>
+          </td>
+          <td class="job">
+              <%= form_for job_record,
+                           :html => { :method => :put } do |f| %>
+                <div class="actions"><%= f.submit "It's Good!" %></div>
+              <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
   <% unless @jobs_to_do.empty? %>
     <% @job_intervals.keys.sort.each do |interval| %>
         <h2><%= interval.capitalize %> Jobs</h2>

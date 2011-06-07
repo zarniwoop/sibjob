@@ -54,3 +54,5 @@ class Job < ActiveRecord::Base
     joins(:job_records).where(:job_records => {:performer_id => sibling.id, :performed_on => on_date})
   end
 end
+
+
