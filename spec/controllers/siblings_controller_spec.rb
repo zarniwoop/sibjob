@@ -162,47 +162,68 @@ describe SiblingsController do
 
       before(:each) do
         @performer = Factory(:sibling, :email => "foo@bar.com")
-        @performed_job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly")
-        @performer.perform_job!(@performed_job)
       end
 
-      it "should show any jobs done by another sibling that need inspection" do
-        get :jobs, :id => @sibling
-        response.should have_selector("h2", :content => "Inspections Needed")
-        response.should have_selector("span.summary", :content => @performed_job.summary)
+      describe "for inspectable jobs" do
+        before(:each) do
+          @performed_job = Factory(:job, :summary => "Sweep front porch", :interval => "weekly")
+          @performer.perform_job!(@performed_job)
+        end
+
+        it "should show any jobs done by another sibling that need inspection" do
+          get :jobs, :id => @sibling
+          response.should have_selector("h2", :content => "Inspections Needed")
+          response.should have_selector("span.summary", :content => @performed_job.summary)
+        end
+
+        it "should show inspections only on the day job was completed" do
+          get :jobs, :id => @sibling, :jobs_on_date => (Date.today + 1).to_s
+          response.should_not have_selector("h2", :content => "Inspections Needed")
+          response.should_not have_selector("span.summary", :content => @performed_job.summary)
+        end
+
+        it "should not show sibling's own completed jobs as needing inspection" do
+          get :jobs, :id => @performer
+          response.should_not have_selector("h2", :content => "Inspections Needed")
+        end
+
+        it "should show an inspect button for jobs to be inspected" do
+          get :jobs, :id => @sibling
+          response.should have_selector("input", :value => "It's Good!")
+        end
+
+        it "should show a button to take back an inspection" do
+          @sibling.inspect_job!(@performed_job.job_records[0])
+          get :jobs, :id => @sibling
+          response.should have_selector("input", :value => "Take Back")
+        end
+
+        it "should not show buttons for inspected jobs for the job performer" do
+          get :jobs, :id => @performer
+          response.should have_selector("input", :value => "Undo")
+          @sibling.inspect_job!(@performed_job.job_records[0])
+          get :jobs, :id => @performer
+          response.should_not have_selector("input", :value => "Undo")
+        end
       end
 
-      it "should show inspections only on the day job was completed" do
-        get :jobs, :id => @sibling, :jobs_on_date => (Date.today + 1).to_s
-        response.should_not have_selector("h2", :content => "Inspections Needed")
-        response.should_not have_selector("span.summary", :content => @performed_job.summary)
-      end
+      describe "for uninspectable jobs" do
+        it "should not show jobs for inspection" do
+          uninspectable_job = Factory(:job, :summary => "Wash clothes", :inspectable => false)
+          @performer.perform_job!(uninspectable_job)
+          get :jobs, :id => @sibling
+          response.should_not have_selector("h2", :content => "Inspections Needed")
+          response.should_not have_selector("span.summary", :content => uninspectable_job.summary)
+        end
 
-      it "should not show sibling's own completed jobs as needing inspection" do
-        get :jobs, :id => @performer
-        response.should_not have_selector("h2", :content => "Inspections Needed")
+        it "should indicate inspection not needed after completion" do
+          uninspectable_job = Factory(:job, :summary => "Wash clothes", :inspectable => false)
+          @performer.perform_job!(uninspectable_job)
+          get :jobs, :id => @performer
+          response.should have_selector("span.summary",
+                                :content => "#{uninspectable_job.summary} (Inspection not needed)")
+        end
       end
-
-      it "should show an inspect button for jobs to be inspected" do
-        get :jobs, :id => @sibling
-        response.should have_selector("input", :value => "It's Good!")
-      end
-
-      it "should show a button to take back an inspection" do
-        @sibling.inspect_job!(@performed_job.job_records[0])
-        get :jobs, :id => @sibling
-        response.should have_selector("input", :value => "Take Back")
-      end
-
-      it "should not show buttons for inspected jobs for the job performer" do
-        get :jobs, :id => @performer
-        response.should have_selector("input", :value => "Undo")
-        @sibling.inspect_job!(@performed_job.job_records[0])
-        get :jobs, :id => @performer
-        response.should_not have_selector("input", :value => "Undo")
-      end
-
-      # it "should not show jobs for inspection that are marked as not inspectable"
 
     end
   end

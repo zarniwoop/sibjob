@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20110602234703
+# Schema version: 20110608002835
 #
 # Table name: jobs
 #
@@ -12,10 +12,11 @@
 #  updated_at           :datetime
 #  interval             :string(255)
 #  assigned_to_everyone :boolean(1)
+#  inspectable          :boolean(1)      default(TRUE)
 #
 
 class Job < ActiveRecord::Base
-  attr_accessible :summary, :description, :pointvalue, :assigned_to_everyone
+  attr_accessible :summary, :description, :pointvalue, :assigned_to_everyone, :inspectable
   belongs_to :sibling
   has_many :job_records
 
@@ -45,7 +46,8 @@ class Job < ActiveRecord::Base
             AND jobs.interval = "weekly")
     where(%(id NOT IN (#{ids_for_jobs_performed_today})
           AND id NOT IN (#{ids_for_weekly_jobs_performed_within_week})
-          AND (sibling_id IS NULL OR sibling_id = :sibling_id)),
+          AND (sibling_id IS NULL OR sibling_id = :sibling_id)
+          AND active = 1),
           {:on_date => on_date, :sibling_id => sibling})
   end
 end

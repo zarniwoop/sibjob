@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110602234703) do
+ActiveRecord::Schema.define(:version => 20110608011422) do
 
   create_table "job_records", :force => true do |t|
     t.integer  "job_id"
@@ -33,6 +33,8 @@ ActiveRecord::Schema.define(:version => 20110602234703) do
     t.datetime "updated_at"
     t.string   "interval"
     t.boolean  "assigned_to_everyone", :default => false
+    t.boolean  "inspectable",          :default => true
+    t.boolean  "active",               :default => true
   end
 
   add_index "jobs", ["sibling_id"], :name => "index_jobs_on_sibling_id"

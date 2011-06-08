@@ -56,7 +56,7 @@
         <% @job_records_done.each do |job_record| %>
           <tr>
             <td class="job">
-              <span class="summary"><%= job_record.job.summary %></span>
+              <span class="summary"><%= job_record.job.summary %> <%= "(Inspection not needed)" unless job_record.job.inspectable %></span>
             </td>
             <td class="points">
               <span class="pointvalue"><%= job_record.job.pointvalue %></span>

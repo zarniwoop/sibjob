@@ -52,4 +52,13 @@ describe Job do
     end
 
   end
+
+  describe "inactive jobs" do
+    it "should not be in the to do list" do
+      @performer = Factory(:sibling, :email => Factory.next(:email))
+      Factory(:job, :summary => "Job 1", :active => false)
+      jobs_to_perform = Job.to_do_for_sibling(@performer.id, Date.today)
+      jobs_to_perform.should be_empty
+    end
+  end
 end
