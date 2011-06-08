@@ -20,6 +20,7 @@ Sibjob::Application.routes.draw do
   namespace :sibling do
     root :to => "siblings#index"
   end
+  match '/sibling', :to => 'siblings#index'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
