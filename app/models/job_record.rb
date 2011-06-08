@@ -13,7 +13,7 @@
 #
 
 class JobRecord < ActiveRecord::Base
-  attr_accessible :performer_id, :inspector_id, :performed_on
+  attr_accessible :performer_id, :performed_on
 
   belongs_to :job
   belongs_to :performer, :class_name => "Sibling"
@@ -24,6 +24,8 @@ class JobRecord < ActiveRecord::Base
   validates :performed_on, :presence => true
 
   after_initialize :init
+  before_create { set_onetime_job_active_state_to(false) unless self.job.inspectable? }
+  before_destroy { set_onetime_job_active_state_to(true) unless self.job.inspectable? }
 
   scope :done_for_sibling, lambda { |sibling, on_date| done_for_sibling_on_date(sibling, on_date) }
   scope :inspectable_for_sibling, lambda { |sibling, on_date| inspectable_for_sibling_on_date(sibling, on_date) }
@@ -37,12 +39,24 @@ class JobRecord < ActiveRecord::Base
     !inspector_id.nil?
   end
 
+  def inspect!(sibling)
+    self.inspector = sibling
+    set_onetime_job_active_state_to(false)
+    save!
+  end
+
   def uninspect!
     self.inspector_id = nil
+    set_onetime_job_active_state_to(true)
     save!
   end
 
   private
+
+  def set_onetime_job_active_state_to(state)
+    self.job.active = state if self.job.interval.nil?
+    self.job.save!
+  end
 
   def self.inspectable_for_sibling_on_date(sibling, on_date)
     joins(:job).where(%(job_records.performed_on = :on_date

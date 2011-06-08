@@ -61,7 +61,7 @@ describe JobRecordsController do
   describe "POST 'update'" do
 
     before(:each) do
-      @job = Factory(:job)
+      @job = Factory(:job, :interval => "daily")
       @performer = Factory(:sibling, :email => Factory.next(:email))
       @performer.perform_job!(@job)
       @job_record = @job.job_records.find_by_performer_id(@performer.id)
