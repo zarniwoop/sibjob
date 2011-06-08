@@ -2,9 +2,12 @@ Sibjob::Application.routes.draw do
   devise_for :siblings
 
   resources :job_records
-  resources :siblings do
-    member do
-      get :jobs
+
+  authenticate :sibling do
+    resources :siblings do
+      member do
+        get :jobs
+      end
     end
   end
 
@@ -13,6 +16,10 @@ Sibjob::Application.routes.draw do
   get "pages/contact"
 
   match '/contact', :to => 'pages#contact'
+
+  namespace :sibling do
+    root :to => "siblings#index"
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

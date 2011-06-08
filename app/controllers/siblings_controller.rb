@@ -1,4 +1,8 @@
 class SiblingsController < ApplicationController
+  def index
+    redirect_to jobs_sibling_path(current_sibling)
+  end
+
   def jobs
     @sibling = Sibling.find(params[:id])
     @jobs_for_date = date_for_job_list(params)

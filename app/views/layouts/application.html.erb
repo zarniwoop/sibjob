@@ -17,9 +17,12 @@
       <header>
         <nav class="round">
           <ul>
-            <li><%= link_to "Home", root_path %></li>
-            <li><%= link_to "Contact", contact_path %></li>
-            <li><%= link_to "Sign in", '#' %></li>
+            <% if sibling_signed_in? %>
+              <li><%= link_to "Today's Jobs", jobs_sibling_path(current_sibling) %></li>
+              <li><%= link_to "Sign Out", destroy_sibling_session_path %></li>
+            <% else %>
+                <li><%= link_to "Sign In", new_sibling_session_path %></li>
+            <% end %>
           </ul>
         </nav>
       </header>
