@@ -7,7 +7,6 @@ class SiblingsController < ApplicationController
       job.interval ||= "one-time"
     end
     @job_intervals = @jobs_to_do.group_by {|job| job.interval}
-    @jobs_done = Job.done_for_sibling(@sibling, @jobs_for_date)
     @job_records_done = JobRecord.done_for_sibling(@sibling, @jobs_for_date)
     @job_records_to_inspect = JobRecord.inspectable_for_sibling(@sibling, @jobs_for_date)
   end
