@@ -25,6 +25,7 @@ class JobRecord < ActiveRecord::Base
 
   after_initialize :init
 
+  scope :done_for_sibling, lambda { |sibling, on_date| done_for_sibling_on_date(sibling, on_date) }
   scope :inspectable_for_sibling, lambda { |sibling, on_date| inspectable_for_sibling_on_date(sibling, on_date) }
 
 
@@ -44,11 +45,10 @@ class JobRecord < ActiveRecord::Base
   private
 
   def self.inspectable_for_sibling_on_date(sibling, on_date)
-#    ids_for_inspectable_jobs =
-#        %(SELECT job_id FROM job_records
-#          WHERE
-#            AND inspector_id IS NULL)
     where("performed_on = '#{on_date}' AND performer_id <> #{sibling.id}")
   end
 
+  def self.done_for_sibling_on_date(sibling, on_date)
+    where(:performer_id => sibling.id, :performed_on => on_date)
+  end
 end

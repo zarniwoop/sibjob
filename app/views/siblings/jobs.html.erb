@@ -50,21 +50,24 @@
     <% end %>
   <% end %>
 
-  <% unless @jobs_done.empty? %>
+  <% unless @job_records_done.empty? %>
       <h2>Completed Jobs</h2>
       <table class="jobs" summary="Sibling performed jobs">
-        <% @jobs_done.each do |job| %>
+        <% @job_records_done.each do |job_record| %>
           <tr>
             <td class="job">
-              <span class="summary"><%= job.summary %></span>
+              <span class="summary"><%= job_record.job.summary %></span>
             </td>
             <td class="points">
-              <span class="pointvalue"><%= job.pointvalue %></span>
+              <span class="pointvalue"><%= job_record.job.pointvalue %></span>
             </td>
-            <td>
-              <%= form_for job.performed_by(@sibling, @jobs_for_date),
-                           :html => { :method => :delete } do |f| %>
-                <div class="actions"><%= f.submit "Undo" %></div>
+            <td class="inspection">
+              <% unless job_record.inspected? %>
+                <%= form_for job_record, :html => { :method => :delete } do |f| %>
+                  <div class="actions"><%= f.submit "Undo" %></div>
+                <% end %>
+              <% else %>
+                <span class="inspected">Inspected!</span>
               <% end %>
             </td>
           </tr>
