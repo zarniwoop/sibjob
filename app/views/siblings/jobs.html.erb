@@ -10,7 +10,7 @@
       <% @job_records_to_inspect.each do |job_record| %>
         <tr>
           <td class="job">
-            <span class="summary"><%= job_record.job.summary %></span>
+            <span class="summary"><%= "#{job_record.job.summary} (#{job_record.performer.display_name})" %></span>
           </td>
           <td class="job">
               <%= form_for job_record,

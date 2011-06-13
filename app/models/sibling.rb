@@ -50,4 +50,8 @@ class Sibling < ActiveRecord::Base
     job_record.inspect!(self)
   end
 
+  def display_name
+    email.partition("@")[0].capitalize
+  end
+
 end
