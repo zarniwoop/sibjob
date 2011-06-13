@@ -198,6 +198,13 @@ describe SiblingsController do
           response.should have_selector("input", :value => "Take Back")
         end
 
+        it "should only show take back button for sibling who inspected the job" do
+          @sibling.inspect_job!(@performed_job.job_records[0])
+          other_sibling = Factory(:sibling, :email => "bigsister@example.com")
+          get :jobs, :id => other_sibling
+          response.should_not have_selector("input", :value => "Take Back")
+        end
+
         it "should not show buttons for inspected jobs for the job performer" do
           get :jobs, :id => @performer
           response.should have_selector("input", :value => "Undo")

@@ -61,6 +61,7 @@ class JobRecord < ActiveRecord::Base
   def self.inspectable_for_sibling_on_date(sibling, on_date)
     joins(:job).where(%(job_records.performed_on = :on_date
                      AND job_records.performer_id <> :sibling_id
+                     AND (job_records.inspector_id IS NULL OR job_records.inspector_id = :sibling_id)
                      AND jobs.inspectable = 1),
                        {:on_date => on_date, :sibling_id => sibling.id})
   end
