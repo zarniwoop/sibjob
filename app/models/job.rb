@@ -39,6 +39,12 @@ class Job < ActiveRecord::Base
             AND jobs.id = job_id
             AND assigned_to_everyone = 0
             AND (jobs.interval IS NULL OR jobs.interval <> "repeatable"))
+    ids_for_everyone_jobs_performed_by_self_today =
+        %(SELECT job_id FROM jobs, job_records
+           WHERE performed_on = :on_date
+             AND jobs.id = job_id
+             AND assigned_to_everyone = 1
+             AND performer_id = :sibling_id)
     ids_for_weekly_jobs_performed_within_week =
         %(SELECT job_id FROM jobs, job_records
           WHERE performed_on between :on_date - INTERVAL 6 DAY and :on_date
@@ -46,6 +52,7 @@ class Job < ActiveRecord::Base
             AND jobs.interval = "weekly")
     where(%(id NOT IN (#{ids_for_jobs_performed_today})
           AND id NOT IN (#{ids_for_weekly_jobs_performed_within_week})
+          AND id NOT IN (#{ids_for_everyone_jobs_performed_by_self_today})
           AND (sibling_id IS NULL OR sibling_id = :sibling_id)
           AND active = 1),
           {:on_date => on_date, :sibling_id => sibling})

@@ -130,6 +130,7 @@ describe SiblingsController do
         @sibling.perform_job!(job)
         get :jobs, :id => @sibling
         response.should have_selector("input", :value => "Undo")
+        response.should_not have_selector("input", :value => "Done!")
       end
 
       it "should show another instance of a repeatable job even if completed by sibling" do
