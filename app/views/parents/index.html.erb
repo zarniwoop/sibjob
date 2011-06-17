@@ -1,0 +1,31 @@
+<div class="main">
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Completed / Inspected</th>
+      <th>All Daily Jobs Done?</th>
+    </tr>
+      <% @siblings.each do |sibling| %>
+        <tr>
+          <td>
+            <span class="sibling"><%= "#{sibling.display_name}" %></span><br>
+          </td>
+          <% jobs_done = JobRecord.done_for_sibling(sibling, Date.today)
+          inspections = jobs_done.find_all {|job_record| job_record.inspected? } %>
+          <td>
+            <span class="jobsdone"><%= "#{jobs_done.count} / #{inspections.count}" %></span>
+          </td>
+          <%
+          jobs_to_do = Job.to_do_for_sibling(sibling, Date.today)
+          daily_jobs_to_do = jobs_to_do.find_all {|job| job.interval == "daily"}
+          uninspected_daily_jobs = jobs_done.find_all {|job_record| job_record.job.interval == "daily" && !job_record.inspected? }
+          %>
+          <td>
+            <span class="alldaily">
+              <%= daily_jobs_to_do.empty? && uninspected_daily_jobs.empty? ? "YES" : "NO" %>
+            </span>
+          </td>
+        </tr>
+      <% end %>
+  </table>
+</div>

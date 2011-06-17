@@ -33,7 +33,7 @@ class Sibling < ActiveRecord::Base
 
   def job_list(performed_on_date = nil)
     performed_on_date ||= Date.today
-    Job.for_sibling(self, performed_on_date)
+    Job.to_do_for_sibling(self, performed_on_date)
   end
 
   def perform_job!(job, performed_on_date = nil)

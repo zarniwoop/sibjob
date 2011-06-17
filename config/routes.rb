@@ -1,7 +1,11 @@
 Sibjob::Application.routes.draw do
+  devise_for :parents
+
   devise_for :siblings
 
   resources :job_records
+
+  resources :parents
 
   authenticate :sibling do
     resources :siblings do
