@@ -4,6 +4,7 @@ Sibjob::Application.routes.draw do
   devise_for :siblings
 
   resources :job_records
+  resources :jobs
 
   resources :parents
 

@@ -1,0 +1,18 @@
+<div class="main">
+  <h2>Job Information</h2>
+  <p><i>Job:</i> <b><span class="summary"><%= "#{@job.summary}" %></span></b>
+  <span class="interval"><%= "(#{@job.interval})" %></span></p>
+  <p>
+    <i>Description:</i><br>
+    <span class="description"><%= @job.description %></span>
+  </p>
+  <p>
+    <i>Value:</i> <span class="pointvalue"><%= @job.pointvalue %> points</span>
+  </p>
+  <p>
+    <% unless @assignee.nil? %>
+        <i>Assigned to:</i> <span class="assignee"><%= @assignee %></span><br>
+    <% end %>
+    <i>Inspectable:</i> <span class="inspectable"><%= @job.inspectable ? "Yes" : "No" %></span>
+  </p>
+</div>

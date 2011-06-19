@@ -33,6 +33,12 @@ describe SiblingsController do
       response.should have_selector("span.pointvalue", :content => job2.pointvalue.to_s)
     end
 
+    it "should show jobs with a link to job detail page" do
+      job = Factory(:job)
+      get :jobs, :id => @sibling
+      response.should have_selector("a", :href => job_url(job.id))
+    end
+
     it "should not show jobs for other siblings" do
       other_sibling = Factory(:sibling, :email => "foo@bar.com")
       job1 = Factory(:job, :sibling => @sibling, :summary => "Wash dishes")
@@ -229,7 +235,7 @@ describe SiblingsController do
           @performer.perform_job!(uninspectable_job)
           get :jobs, :id => @performer
           response.should have_selector("span.summary",
-                                :content => "#{uninspectable_job.summary} (Inspection not needed)")
+                                :content => "(Inspection not needed)")
         end
       end
 
